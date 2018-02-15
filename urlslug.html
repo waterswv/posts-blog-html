@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>URL Slugs Node.js</title>
+  </head>
+  <body>
+    <h1>URL Slugs with Node.js & MongoDB</h1>
+      <section>Today I added semantic urls to my blog posts and wanted to take a few minutes to
+      document the process and how I set this up here on the <a href="/blog">site</a>. You
+      can find the code I used located on my <a href="https://github.com/waterswv/blog-api">GitHub</a>.
+      I also found this post by <a href="http://blog.benmcmahen.com/post/41122888102/creating-slugs-for-your-blog-using-expressjs-and">Ben McMahen</a>
+      very helpful, and borrowed part of his functions for my implementation. He references some interesting details
+      about the history of how <strong>URL Slugs</strong> got their name from the publishing industry which got me to thinking, a bit nostalically,
+      back to my days of designing the daily student paper layouts working at the <a href="https://www.redandblack.com/">Red & Black</a> when I was in college.</section>
+
+      <section>More on those days in a later non-topical post :). For me, URL slugs were a bit confusing before I had enough experience
+      with Mongo lookups and passing 'attributes' through routes. However, once I got accustomed to using findOne vs findById it turned
+      into a fairly simple update. However, like most things, it took several iterations & steps to get the functionality working exactly
+      to my specifications. I ended up breaking it out into 3 steps:
+      <br>
+      <br>
+      <h4>My steps comprised these updates: </h4>
+      <ul>
+        <li>The Model</li>
+        <li>The Route</li>
+        <li>The Template Engine</li>
+      </ul>
+      <p> <h4>The Model</h4>
+      The model updates constituted most of the work, but thanks to a nifty reg ex function that I was able to pull from Ben's post
+      it didn't take me too long. <br>
+      The first step is to setup a function that can be called to format whatever text string we use for our title and then prepend a
+      date string to beinginng of it. This will ensure that all my urls are unique to the day they are written.
+      <script src="https://gist.github.com/waterswv/dc9edd9f5adb855cd4632601091b1320.js"></script>
+      You can see that we first grab the text, and format it with a Regular Expression chain, next we utilize moment.js to
+      generate a date and format it in a 2018-02-17 structure.
+      <br>
+      <br>
+      Next we will generate the function that will create the slug during the create call that generates each instance.
+      <script src="https://gist.github.com/waterswv/2f332460445ea87feb99f736d954deef.js"></script>
+      We accomplish this by utilizing the .pre() function that will take our title field and generate the slug field before
+      finishing the create method during our post call from the api.
+      <br>
+      <br>
+      Finally we will update the Schema to include the 'slug: String' as a new storage field.
+      <br>
+      <script src="https://gist.github.com/waterswv/bf4e1cbe7569e72c05f1e19ea7f3401b.js"></script>
+    </p>
+    <p> <h4>The Route</h4>
+    The route is a much simpler process, all we need to do is make a small update to the find method and add a k:v pair search parameter.
+    Below is before & after.
+     <script src="https://gist.github.com/waterswv/0855d42b4a4571a9995b959bc4ff9965.js"></script>
+     <br>
+    </p>
+    <p> <h4>The Template Engine</h4>
+      And finally the template engine update is the simplest of all. You swap out the variable name of _id for slug.
+      <script src="https://gist.github.com/waterswv/5ca8f3e92ebd0032845ddd13d6e0ed9f.js"></script>
+    </p>
+    </section>
+    <section>
+      <p>Overall this took me a few hours to implement beacuse the Mongo docs are as I'm sure you've noticed lacking to say the least.
+      However, the majority of the work was figuring out the proper format for <a href="https://momentjs.com/docs/">moment.js</a> &
+      <a href="https://mongodb.github.io/node-mongodb-native/markdown-docs/queries.html">findOne</a>. If you aren't familiar with template
+      engines, the <a href="http://handlebarsjs.com/">HandlebarsJS</a> documentation is pretty good and you can find some helpful examples
+      to implement with express on stackoverflow.</p>
+      <p>Thanks for visiting and feel free to drop me an <a href="mailto:blog@bryanmierke.com">email</a> if you have any questions!</p>
+    </section>
+  </body>
+</html>
